@@ -41,7 +41,6 @@ def test_pictures_json_is_not_empty(client):
     res = client.get("/picture")
     assert len(res.json) > 0
 
-
 def test_post_picture(picture, client):
     # create a brand new picture to upload
     res = client.post("/picture", data=json.dumps(picture),

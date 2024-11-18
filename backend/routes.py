@@ -33,14 +33,9 @@ def count():
 ######################################################################
 # GET ALL PICTURES
 ######################################################################
-def get_pictures_data():
-    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-    json_url = os.path.join(SITE_ROOT, "data", "pictures.json")
-    return json.load(open(json_url))
-
 @app.route("/picture", methods=["GET"])
 def get_pictures():
-    pictures = get_pictures_data()
+    pictures = data
     
     if pictures:
         return jsonify(pictures), 200
@@ -54,8 +49,7 @@ def get_pictures():
 
 @app.route("/picture/<int:id>", methods=["GET"])
 def get_picture_by_id(id):
-    pictures = get_pictures_data()
-    picture = [pic for pic in pictures if pic['id'] == id]
+    picture = [pic for pic in data if pic['id'] == id]
 
     if picture:
         return jsonify(picture[0]), 200
@@ -67,7 +61,15 @@ def get_picture_by_id(id):
 ######################################################################
 @app.route("/picture", methods=["POST"])
 def create_picture():
-    pass
+    picture = request.json
+
+    pictures = [pic for pic in data if pic['id'] == picture['id']]
+
+    if pictures and pictures[0]:
+        return {"Message": f"picture with id {picture['id']} already present"}, 302
+    else:
+        data.append(picture)
+        return jsonify(picture), 201
 
 ######################################################################
 # UPDATE A PICTURE
