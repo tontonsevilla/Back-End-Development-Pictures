@@ -33,10 +33,20 @@ def count():
 ######################################################################
 # GET ALL PICTURES
 ######################################################################
+def get_pictures_data():
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    json_url = os.path.join(SITE_ROOT, "data", "pictures.json")
+    return json.load(open(json_url))
+
 @app.route("/picture", methods=["GET"])
 def get_pictures():
-    pass
+    pictures = get_pictures_data()
+    
+    if pictures:
+        return jsonify(pictures), 200
 
+    return {"message": "Internal server error"}, 500
+    
 ######################################################################
 # GET A PICTURE
 ######################################################################
@@ -44,8 +54,13 @@ def get_pictures():
 
 @app.route("/picture/<int:id>", methods=["GET"])
 def get_picture_by_id(id):
-    pass
+    pictures = get_pictures_data()
+    picture = [pic for pic in pictures if pic['id'] == id]
 
+    if picture:
+        return jsonify(picture[0]), 200
+    
+    return {"message": "Picture not found"}, 404
 
 ######################################################################
 # CREATE A PICTURE
