@@ -35,8 +35,13 @@ def count():
 ######################################################################
 @app.route("/picture", methods=["GET"])
 def get_pictures():
-    pass
+    pictures = data
+    
+    if pictures:
+        return jsonify(pictures), 200
 
+    return {"message": "Internal server error"}, 500
+    
 ######################################################################
 # GET A PICTURE
 ######################################################################
@@ -44,15 +49,27 @@ def get_pictures():
 
 @app.route("/picture/<int:id>", methods=["GET"])
 def get_picture_by_id(id):
-    pass
+    picture = [pic for pic in data if pic['id'] == id]
 
+    if picture:
+        return jsonify(picture[0]), 200
+    
+    return {"message": "Picture not found"}, 404
 
 ######################################################################
 # CREATE A PICTURE
 ######################################################################
 @app.route("/picture", methods=["POST"])
 def create_picture():
-    pass
+    picture = request.json
+
+    pictures = [pic for pic in data if pic['id'] == picture['id']]
+
+    if pictures and pictures[0]:
+        return {"Message": f"picture with id {picture['id']} already present"}, 302
+    else:
+        data.append(picture)
+        return jsonify(picture), 201
 
 ######################################################################
 # UPDATE A PICTURE
@@ -61,11 +78,24 @@ def create_picture():
 
 @app.route("/picture/<int:id>", methods=["PUT"])
 def update_picture(id):
-    pass
+    pictures = [pic for pic in data if pic['id'] == id]
+
+    if pictures and pictures[0]:
+        idx = data.index(pictures[0])
+        data[idx] = request.json
+        return jsonify(data[idx]), 200
+
+    return {"message": "picture not found"}, 404
 
 ######################################################################
 # DELETE A PICTURE
 ######################################################################
 @app.route("/picture/<int:id>", methods=["DELETE"])
 def delete_picture(id):
-    pass
+    pictures = [pic for pic in data if pic['id'] == id]
+
+    if pictures and pictures[0]:
+        data.remove(pictures[0])
+        return "", 204
+
+    return {"message": "picture not found"}, 404
